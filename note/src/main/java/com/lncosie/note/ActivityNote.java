@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toolbar;
 
 public class ActivityNote extends Activity {
 
@@ -11,6 +12,8 @@ public class ActivityNote extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+        Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.menu_activity_note);
     }
 
     @Override
