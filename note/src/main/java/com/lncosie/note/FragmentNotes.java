@@ -29,8 +29,9 @@ public class FragmentNotes extends Fragment {
     ListView    listNotes;
     NotesAdapter    notesAdapter;
     CategoryAdapter categoryAdapter;
+
     public FragmentNotes() {
-        // Required empty public constructor
+
     }
 
 
@@ -44,15 +45,21 @@ public class FragmentNotes extends Fragment {
         listNotes=(ListView)view.findViewById(R.id.list_notes);
 
         toolbar.inflateMenu(R.menu.menu_activity_note);
-        notesAdapter=new NotesAdapter(this.getActivity(),"root");
+        notesAdapter=new NotesAdapter(this.getActivity(),"Menu");
         categoryAdapter=new CategoryAdapter(this.getActivity());
+        //listCategory.setDivider(null);
+        //listCategory.setDividerHeight(2);
         listCategory.setAdapter(categoryAdapter);
-        listNotes.setAdapter(notesAdapter);
         listCategory.setOnItemClickListener(categoryClick);
+
+        listNotes.setAdapter(notesAdapter);
+        listNotes.setDivider(null);
+        listNotes.setDividerHeight(2);
         listNotes.setOnItemClickListener(noteClick);
         toolbar.setOnMenuItemClickListener(menu_click);
         return view;
     }
+
 
     Toolbar.OnMenuItemClickListener menu_click=new Toolbar.OnMenuItemClickListener() {
         @Override
@@ -73,7 +80,8 @@ public class FragmentNotes extends Fragment {
 
                     break;
                 case R.id.button_note_add:
-                    notesAdapter.notes.add(new Note("root","ffff"));
+                    ((ActivityNote)getActivity()).gotoEditor(notesAdapter.notes.add("abc"));
+                    notesAdapter.notifyDataSetChanged();
                     break;
                 case R.id.button_note_delete:
                     break;
@@ -88,19 +96,25 @@ public class FragmentNotes extends Fragment {
 
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Category    category=categoryAdapter.getItem(position);
-            if(category.getCategory().equals("+"))
+            if(category.getCategory().equals("Menu"))
             {
+                categoryAdapter.fsNote.add("Menu");
+                categoryAdapter.notifyDataSetChanged();
                 return;
             }
+            listCategory.setSelection(-1);
+            listCategory.setSelection(position);
+            notesAdapter.setCategory(category.getCategory());
 
         }
     };
     AdapterView.OnItemClickListener noteClick=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Toast.makeText(getActivity(), "cc", Toast.LENGTH_SHORT).show();
+            ((ActivityNote)getActivity()).gotoEditor(notesAdapter.getItem(position));
         }
     };
+
 
     static class    CategoryAdapter extends Adapater<Category>
     {
@@ -109,10 +123,11 @@ public class FragmentNotes extends Fragment {
             super(context, R.layout.item_category,ViewHolder.class,R.id.text_category);
             List<Category> load=new Select().from(Category.class).execute();
             fsNote=new FsNote(load);
+            fsNote.add("Menu");
             setItems(fsNote);
         }
     }
-    //static class    NotesAdapter extends ArrayAdapter<Note>
+
     static class    NotesAdapter extends Adapater<Note>
     {
         Category    notes;

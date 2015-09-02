@@ -9,9 +9,24 @@ public class ActivityNote extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
-        getFragmentManager().beginTransaction().add(R.id.fragment_container,new FragmentNotes()).commit();
-
+        gotoMonitor();
     }
-
-
+    boolean editing=false;
+    @Override
+    public void onBackPressed() {
+        if(editing)
+            gotoMonitor();
+        else
+            super.onBackPressed();
+    }
+    void gotoMonitor()
+    {
+        editing=false;
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentNotes()).commit();
+    }
+    public void gotoEditor(Note note)
+    {
+        editing=true;
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentNoteEditor().init(note)).commit();
+    }
 }

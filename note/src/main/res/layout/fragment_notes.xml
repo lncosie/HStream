@@ -17,18 +17,22 @@ tools:context=".FragmentNotes">
     >
 
     <ListView
+
         android:id="@+id/list_cateogry"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.3"
-        android:background="@android:color/background_light"></ListView>
+        android:background="@color/blue"
+        ></ListView>
 
     <ListView
+
         android:id="@+id/list_notes"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.7"
-        android:background="@android:color/darker_gray"></ListView>
+        android:background="@color/orange"
+        ></ListView>
 </LinearLayout>
 
 <Toolbar
