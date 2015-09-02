@@ -1,26 +1,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     tools:context=".ActivityNote">
-    <ListView
-        android:layout_width="0dp"
-        android:layout_weight="300"
-        android:layout_height="match_parent"></ListView>
+
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="0dp"
-        android:layout_weight="618"
-        android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        android:descendantFocusability="blocksDescendants"
+        android:focusable="false"
+        android:clickable="false"
+        >
 
         <ListView
-            android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_height="0dp"></ListView>
-        <Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </Toolbar>
+            android:id="@+id/list_cateogry"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:background="@android:color/background_light"></ListView>
+
+        <ListView
+            android:id="@+id/list_notes"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7"
+            android:background="@android:color/darker_gray"></ListView>
     </LinearLayout>
+
+    <Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></Toolbar>
 </LinearLayout>
