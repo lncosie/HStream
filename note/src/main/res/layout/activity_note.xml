@@ -3,36 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ActivityNote">
+    tools:context=".ActivityNote"
+    android:id="@+id/fragment_container"
+    >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        android:baselineAligned="false"
-        android:descendantFocusability="blocksDescendants"
-        android:focusable="false"
-        android:clickable="false"
-        >
 
-        <ListView
-            android:id="@+id/list_cateogry"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            android:background="@android:color/background_light"></ListView>
-
-        <ListView
-            android:id="@+id/list_notes"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.7"
-            android:background="@android:color/darker_gray"></ListView>
-    </LinearLayout>
-
-    <Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"></Toolbar>
 </LinearLayout>
