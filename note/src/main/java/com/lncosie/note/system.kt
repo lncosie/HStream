@@ -11,7 +11,7 @@ open class  Note(@Column(name="CATEGORY")var category:String?,@Column(name="CONT
 {
     var annex:List<Any>?=null;
 
-    override fun toString(): String = content?.toString()?:""
+    override fun toString(): String = content?.toString()?:"";
 }
 @Table(name="CATEGORY")
 open class  Category(@Column(name="NAME")val category:String):Model(),Iterable<Note>
