@@ -2,15 +2,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lncosie.note" >
 
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <application
+        android:name="com.activeandroid.app.Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="com.activeandroid.app.Application"
-        >
-        <meta-data android:name="AA_DB_NAME" android:value="note.db" />
-        <meta-data android:name="AA_DB_VERSION" android:value="1" />
+        android:theme="@style/AppTheme" >
+        <meta-data
+            android:name="AA_DB_NAME"
+            android:value="note.db" />
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="1" />
+
         <activity
             android:name=".ActivityNote"
             android:label="@string/app_name" >
@@ -19,6 +25,28 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <!--<receiver-->
+            <!--android:name=".camera.CarmeraReceiver"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="true" >-->
+            <!--<action android:name="com.android.camera.NEW_PICTURE" />-->
+            <!--<action android:name="android.hardware.action.NEW_PICTURE" />-->
+
+            <!--<data android:mimeType="image/*" />-->
+        <!--</receiver>-->
+
+        <service
+            android:name=".service.ServiceListener"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:name="ui.ActivityNotify"
+            android:label="@string/title_activity_activity_notify" >
         </activity>
     </application>
 

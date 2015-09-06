@@ -1,7 +1,11 @@
 package com.lncosie.note;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 
 public class ActivityNote extends Activity {
 
@@ -11,6 +15,7 @@ public class ActivityNote extends Activity {
         setContentView(R.layout.activity_note);
         gotoMonitor();
     }
+
     boolean editing=false;
     @Override
     public void onBackPressed() {

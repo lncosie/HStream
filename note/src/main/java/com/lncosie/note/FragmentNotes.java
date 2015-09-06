@@ -47,8 +47,8 @@ public class FragmentNotes extends Fragment {
         toolbar.inflateMenu(R.menu.menu_activity_note);
         notesAdapter=new NotesAdapter(this.getActivity(),"Menu");
         categoryAdapter=new CategoryAdapter(this.getActivity());
-        //listCategory.setDivider(null);
-        //listCategory.setDividerHeight(2);
+        listCategory.setDivider(null);
+        listCategory.setDividerHeight(2);
         listCategory.setAdapter(categoryAdapter);
         listCategory.setOnItemClickListener(categoryClick);
 
@@ -98,7 +98,7 @@ public class FragmentNotes extends Fragment {
             Category    category=categoryAdapter.getItem(position);
             if(category.getCategory().equals("Menu"))
             {
-                categoryAdapter.fsNote.add("Menu");
+                categoryAdapter.fsNote.add("X");
                 categoryAdapter.notifyDataSetChanged();
                 return;
             }
@@ -140,6 +140,7 @@ public class FragmentNotes extends Fragment {
             List<Note> load=new Select().from(Note.class).where("category=?",category).execute();
             notes=new Category(category,load);
             setItems(notes);
+            notifyDataSetChanged();
         }
 
     }

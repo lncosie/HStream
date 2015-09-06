@@ -1,5 +1,8 @@
 package com.lncosie.note
 
+import android.content.ClipDescription
+import android.content.ClipboardManager
+import android.content.Context
 import com.activeandroid.Model
 import com.activeandroid.annotation.Column
 import com.activeandroid.annotation.Table
@@ -51,5 +54,36 @@ open class FsNote(val categorys:MutableList<Category>):MutableList<Category> by 
         categorys.add(cate)
         cate.save()
         return cate
+    }
+}
+open    class   ClipManager(val context:Context)
+{
+    val   listener: ClipboardManager.OnPrimaryClipChangedListener=object : ClipboardManager.OnPrimaryClipChangedListener {
+        override fun onPrimaryClipChanged() {
+            val clipdata=clipmanager.getPrimaryClip()
+            //MIMETYPE_TEXT_PLAIN,MIMETYPE_TEXT_HTML
+            val clipData = clipmanager.getPrimaryClip();
+            for(i:Int=0;i<10;i++)
+            {
+
+            }
+            val count = clipData.getItemCount();
+
+            fore() {
+
+                val item = clipData.getItemAt(i);
+                val str = item.coerceToText();
+
+            }
+        }
+    }
+    val   clipmanager= context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager;
+    fun init(context: Context)
+    {
+        clipmanager.addPrimaryClipChangedListener(listener)
+    }
+    fun destroy()
+    {
+        clipmanager.removePrimaryClipChangedListener(listener)
     }
 }
