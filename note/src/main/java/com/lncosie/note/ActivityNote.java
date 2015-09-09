@@ -7,6 +7,9 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import com.lncosie.ankorm.Useage;
+
+
 public class ActivityNote extends Activity {
 
     @Override
@@ -14,6 +17,9 @@ public class ActivityNote extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         gotoMonitor();
+
+
+
     }
 
     boolean editing=false;

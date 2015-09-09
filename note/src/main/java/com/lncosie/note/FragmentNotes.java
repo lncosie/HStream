@@ -16,6 +16,7 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.activeandroid.query.Select;
+import com.lncosie.ankorm.Useage;
 
 import java.util.List;
 
@@ -84,6 +85,8 @@ public class FragmentNotes extends Fragment {
                     notesAdapter.notifyDataSetChanged();
                     break;
                 case R.id.button_note_delete:
+                    Useage useage=new Useage();
+                    useage.useage(getActivity());
                     break;
                 case R.id.button_note_select:
                     break;
