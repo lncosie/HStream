@@ -1,1 +1,1 @@
-include ':note', ':stream', ':ankorm'
+include ':note', ':stream'
