@@ -185,5 +185,4 @@ public  class TableInfo<M:Model>(val m: Class<M>) {
             }
         }
     }
-
 }
