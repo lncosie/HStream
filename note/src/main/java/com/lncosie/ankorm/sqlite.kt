@@ -9,20 +9,23 @@ import java.lang.Double
 import java.lang.Float
 import java.lang.Long
 import java.lang.Short
+import kotlin.Int
 import java.lang.reflect.Field
 import java.util.*
 import kotlin.properties.Delegates
 
 
-public open class SqliteDriver(context: Context?, name: String?, version: Int)
+public open class SqliteDriver(context: Context, name: String, version: Int)
 : SQLiteOpenHelper(context, name, null, version) {
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: kotlin.Int, newVersion: kotlin.Int) {
+        throw UnsupportedOperationException()
+    }
+
     override fun onCreate(db: SQLiteDatabase) {
 
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
 
-    }
     public inline fun <reified M:Model>scahmeInit(){
         val tableInfo=TableInfo(javaClass<M>())
         getWritableDatabase().execSQL(tableInfo.getSchema())
@@ -185,4 +188,5 @@ public  class TableInfo<M:Model>(val m: Class<M>) {
             }
         }
     }
+
 }

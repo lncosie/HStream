@@ -4,6 +4,7 @@ package com.lncosie.ankorm
 import android.content.Context
 import android.util.Log
 import java.util.HashMap
+import kotlin.Int
 import kotlin.platform.platformStatic
 import kotlin.properties.Delegates
 
