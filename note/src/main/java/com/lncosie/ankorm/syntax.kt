@@ -31,7 +31,6 @@ fun case()
     when(a){
         is Add->{val (left,right) = a;left;right;}
         is Add->{val (left,right) = a;left;right;}
-
     }
 
 
