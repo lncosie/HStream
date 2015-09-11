@@ -6,41 +6,31 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.activeandroid
-import com.activeandroid.serializer.TypeSerializer
-import com.activeandroid.util.Log
-import com.activeandroid.util.ReflectionUtils
 import dalvik.system.DexFile
-import java.io.File
-import java.io.IOException
 import java.lang.Double
 import java.lang.Float
 import java.lang.Long
 import java.lang.Short
 import java.lang.reflect.Field
-import java.net.URL
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.Int
 import kotlin.properties.Delegates
 
 
-public open class SqliteDriver(context: Context, name: String, version: Int)
+public class SqliteDriver(context: Context, name: String, version: Int)
 : SQLiteOpenHelper(context, name, null, version) {
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: kotlin.Int, newVersion: kotlin.Int) {
         throw UnsupportedOperationException()
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-
     }
-    public fun execSQL(sql:String){
+
+    public fun execSQL(sql: String) {
         getWritableDatabase().execSQL(sql)
     }
-//    public inline fun <reified M : View>scahmeInit() {
-//        val tableInfo = TableInfo(javaClass<M>())
-//        tableInfo.tableWriteInit()
-//        getWritableDatabase().execSQL(tableInfo.getSchema())
-//    }
 
     public fun<M : View> save(m: M) {
         val database = getWritableDatabase()
@@ -50,7 +40,7 @@ public open class SqliteDriver(context: Context, name: String, version: Int)
         tableInfo.export(m, values)
         if (m.Id == null) {
             values.remove("Id")
-            m.Id=database.insert(tableInfo.tableName, null, values)
+            m.Id = database.insert(tableInfo.tableName, null, values)
         } else {
             database.replace(tableInfo.tableName, null, values)
         }
@@ -66,7 +56,7 @@ public open class SqliteDriver(context: Context, name: String, version: Int)
     public inline fun <reified M : View>load(Id: kotlin.Long): M? {
         val tableInfo = TableInfo<M>(javaClass<M>())
         val sql = StringBuilder { this.append("SELECT * FROM ").append(tableInfo.tableName).append(" WHERE Id=").append(Id.toString()) }
-        val it = rawQuery(tableInfo, sql.toString(), javaClass<M>(), null);
+        val it = rawQuery(tableInfo, sql.toString(), null);
         for (element in it)
             return element
         return null
@@ -75,16 +65,16 @@ public open class SqliteDriver(context: Context, name: String, version: Int)
     public inline fun <reified M : View>all(): Iterable<M> {
         val tableInfo = TableInfo<M>(javaClass<M>())
         val sql = StringBuilder { this.append("SELECT * FROM ").append(tableInfo.tableName) }
-        return rawQuery(tableInfo, sql.toString(), javaClass<M>(), null);
+        return rawQuery(tableInfo, sql.toString(), null);
     }
 
     public inline fun <reified M : View>where(where: String, bound: Array<out Any>): Iterable<M> {
         val tableInfo = TableInfo<M>(javaClass<M>())
         val sql = StringBuilder { this.append("SELECT * FROM ").append(tableInfo.tableName).append(" WHERE ").append(where) }
-        return rawQuery(tableInfo, sql.toString(), javaClass<M>(), bound.map { it.toString() }.toTypedArray());
+        return rawQuery(tableInfo, sql.toString(),bound.map { it.toString() }.toTypedArray());
     }
 
-    public fun <M : View>rawQuery(tableInfo: TableInfo<M>, sql: String, jClass: Class<M>, selectionArgs: Array<String>?): Iterable<M> {
+    public fun <M : View>rawQuery(tableInfo: TableInfo<M>, sql: String, selectionArgs: Array<String>?): Iterable<M> {
         val cursor = getReadableDatabase().rawQuery(sql, selectionArgs)
         tableInfo.tableQeueryInit(cursor)
         val iterator = object : Iterator<M> {
@@ -105,7 +95,7 @@ public open class SqliteDriver(context: Context, name: String, version: Int)
     }
 }
 
-public class TableInfo<M : View>(val m: Class<?>) {
+public class TableInfo<M : View>(val m: Class<M>) {
     var Id: Int = 0;
     public var tableName: String by Delegates.notNull()
     var columns: MutableList<ColumnInfo> = ArrayList()
@@ -114,15 +104,13 @@ public class TableInfo<M : View>(val m: Class<?>) {
         val table = m.getAnnotation(kotlin.javaClass<com.lncosie.ankorm.TableName>())
         tableName = table?.table ?: m.getAnnotation(javaClass<ViewName>()).view
     }
+
     public fun tableQeueryInit(cursor: Cursor) {
         m.getDeclaredFields()
         assert(isTable() or isView(), "Query need mark Table or View annotations")
         Id = cursor.getColumnIndex("Id")
         m.getDeclaredFields().filter {
-            it.getAnnotation(javaClass<Column>()) != null
-                    || it.getAnnotation(javaClass<NotNull>()) != null
-                    || it.getAnnotation(javaClass<PrimaryKey>()) != null
-                    || it.getAnnotation(javaClass<Unique>()) != null
+            it.getDeclaredAnnotations().size() > 0
         }.forEach {
             val name = it.getName()
             val index = cursor.getColumnIndex(name)
@@ -133,10 +121,7 @@ public class TableInfo<M : View>(val m: Class<?>) {
     public fun tableWriteInit() {
         assert(isTable(), "Write only for Table annotation class")
         m.getDeclaredFields().filter {
-            it.getAnnotation(javaClass<Column>()) != null
-                    || it.getAnnotation(javaClass<NotNull>()) != null
-                    || it.getAnnotation(javaClass<PrimaryKey>()) != null
-                    || it.getAnnotation(javaClass<Unique>()) != null
+            it.getDeclaredAnnotations().size() > 0
         }.forEach {
             val name = it.getName()
             columns.add(ColumnInfo(it, name, -1))
@@ -164,33 +149,44 @@ public class TableInfo<M : View>(val m: Class<?>) {
             sql.append("CREATE VIEW IF NOT EXISTS ")
             sql.append(tableName)
             sql.append(" AS ")
-            sql.append(view.sqlSelect)
+            sql.append(view.viewAsSelect)
             return sql.toString()
         }
     }
 
     fun restrict(field: Field): String {
         val restrictsql = StringBuilder()
+        field.getDeclaredAnnotations().forEach {
+            restrictsql.append(
+                    when (field.getType()) {
+                        javaClass<Byte>() -> " INTEGER"
+                        javaClass<Char>() -> " INTEGER"
+                        javaClass<Integer>() -> " INTEGER"
+                        javaClass<Int>() -> " INTEGER"
+                        javaClass<Short>()->" INTEGER"
+                        javaClass<Boolean>()->" INTEGER"
 
+                        javaClass<Long>() -> " BIG INTEGER"
+                        javaClass<Float>() -> " REAL"
+                        javaClass<Double>() -> " REAL"
+                        javaClass<String>() -> " TEXT"
+                        javaClass<ByteArray>() -> " BLOB"
 
-        if (field.getAnnotation(javaClass<PrimaryKey>()) != null)
-            restrictsql.append(" PRIMARY KEY ")
-        if (field.getAnnotation(javaClass<NotNull>()) != null)
-            restrictsql.append(" Not NULL ")
-        if (field.getAnnotation(javaClass<Unique>()) != null)
-            restrictsql.append(" Unique ")
+                        javaClass<Date>()-> " TEXT "
+                        javaClass<Calendar>()-> " TEXT "
+                        else -> -1
+                    }
+            )
+            restrictsql.append(
+                    when (it) {
+                        is NotNull -> " Not NULL "
+                        is PrimaryKey -> "  PRIMARY KEY "
+                        is Unique -> " Unique "
+                        else -> ""
+                    }
+            )
+        }
         return restrictsql.toString()
-//            field.getDeclaredAnnotations().forEach {
-//                append(
-//                        when (it) {
-//                            is NotNull -> " Not NULL "
-//                            is PrimaryKey -> "  PRIMARY KEY "
-//                            is Unique -> " Unique "
-//                            else -> ""
-//                        }
-//                )
-//            }
-
 
     }
 
@@ -214,8 +210,13 @@ public class TableInfo<M : View>(val m: Class<?>) {
                 4 -> values.put(column.name, column.field.getDouble(m))
                 5 -> values.put(column.name, column.field.get(m) as String)
                 6 -> values.put(column.name, column.field.get(m) as ByteArray)
+                7 -> values.put(column.name, column.field.getShort(m))
+                8 -> values.put(column.name, column.field.getBoolean(m))
+                9 -> values.put(column.name, (column.field.get(m) as Date).toString())
                 else -> values.putNull(column.name)
             }
+
+
         }
     }
 
@@ -225,9 +226,8 @@ public class TableInfo<M : View>(val m: Class<?>) {
             this.field = field
             this.index = index
             this.name = name
-
             type = when (field.getType()) {
-                javaClass<Short>() -> 0
+                javaClass<Byte>() -> 0
                 javaClass<Integer>() -> 1
                 javaClass<Int>() -> 1
                 javaClass<Long>() -> 2
@@ -235,6 +235,10 @@ public class TableInfo<M : View>(val m: Class<?>) {
                 javaClass<Double>() -> 4
                 javaClass<String>() -> 5
                 javaClass<ByteArray>() -> 6
+                javaClass<Short>()->7
+                javaClass<Boolean>()->8
+                javaClass<Date>()->9
+                //javaClass<Calendar>()->10
                 else -> -1
             }
         }
@@ -254,93 +258,36 @@ public class TableInfo<M : View>(val m: Class<?>) {
                 4 -> field.set(m, cursor.getDouble(index));
                 5 -> field.set(m, cursor.getString(index));
                 6 -> field.set(m, cursor.getBlob(index));
+                7 -> field.set(m, cursor.getShort(index));
+                8 -> field.set(m, cursor.getInt(index)==0);
+                9 -> field.set(m, Date(cursor.getString(index)));
                 else -> field.set(m, null)
+
             }
         }
     }
 }
-class ModuleInit()
-{
-    public  fun scanForModel(application: Application) {
-        val packageName = application.getPackageName()
-        val sourcePath = application.getApplicationInfo().sourceDir
-        val paths = ArrayList<String>()
-        if (sourcePath != null) {
-            val path = DexFile(sourcePath)
-            val resources = path.entries()
-            while (resources.hasMoreElements()) {
-                paths.add(resources.nextElement() as String)
-            }
-        } else {
-            val path1 = Thread.currentThread().getContextClassLoader()
-            val resources = path1.getResources("")
 
-            while (resources.hasMoreElements()) {
-                val file = (resources.nextElement() as URL).getFile()
-                if (file.contains("bin")) {
-                    paths.add(file)
-                }
+class ModuleInit() {
+    public fun scanForModel(application: Context) {
+        val path = application.getPackageCodePath()
+        val loader = application.getClassLoader()
+        val file = DexFile(path)
+        for (code in file.entries()) {
+            val classT = file.loadClass(code, loader)
+            var viewT = classT?.getAnnotation(javaClass<ViewName>())
+            if (viewT != null) {
+                val viewDef = TableInfo<View>(classT as Class<View>)
+                viewDef.tableWriteInit()
+                AnkOrm.get().execSQL(viewDef.getSchema())
+                continue
+            }
+            var tableT = classT?.getAnnotation(javaClass<TableName>())
+            if (tableT != null) {
+                val tableDef = TableInfo<Table>(classT as Class<Table>)
+                tableDef.tableWriteInit()
+                AnkOrm.get().execSQL(tableDef.getSchema())
             }
         }
-        val resources1 = paths.iterator()
-
-        while (resources1.hasNext()) {
-            val file1 = File(resources1.next())
-            this.scanForModelClasses(file1, packageName, application.javaClass.getClassLoader())
-        }
-    }
-
-    private fun scanForModelClasses(path: File, packageName: String, classLoader: ClassLoader) {
-        var e: Int
-        if (path.isDirectory()) {
-            val var7=path.listFiles()
-            val typeSerializer = var7.size()
-            e = 0
-            while (e < typeSerializer) {
-                val className = var7[e]
-                this.scanForModelClasses(className, packageName, classLoader)
-                ++e
-            }
-        } else {
-            var var11 = path.getName()
-            if (path.getPath() != var11) {
-                var11 = path.getPath()
-                if (!var11.endsWith(".class")) {
-                    return
-                }
-                var11 = var11.substring(0, var11.length() - 6)
-                var11 = var11.replace("/", ".")
-                e = var11.lastIndexOf(packageName)
-                if (e < 0) {
-                    return
-                }
-
-                var11 = var11.substring(e)
-            }
-
-            try {
-                val var12 = Class.forName(var11, false, classLoader)
-                if(var12.getAnnotation(javaClass<ViewName>())!=null||var12.getAnnotation(javaClass<TableName>())!=null)
-                {
-                    val tableInfo = TableInfo<View>(var12)
-                    tableInfo.tableWriteInit()
-                    AnkOrm.get().execSQL(tableInfo.getSchema())
-                }
-//                if (ReflectionUtils.isModel(var12)) {
-//                    //this.mTableInfos.put(var12, activeandroid.TableInfo(var12))
-//                } else if (ReflectionUtils.isTypeSerializer(var12)) {
-//                    val var13 = var12.newInstance() as TypeSerializer
-//                    //this.mTypeSerializers.put(var13.javaClass, var13)
-//                }
-            } catch (var8: ClassNotFoundException) {
-                Log.e("Couldn\'t create class.", var8)
-            } catch (var9: InstantiationException) {
-                Log.e("Couldn\'t instantiate TypeSerializer.", var9)
-            } catch (var10: IllegalAccessException) {
-                Log.e("IllegalAccessException", var10)
-            }
-
-        }
-
     }
 }

@@ -16,8 +16,13 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.activeandroid.query.Select;
+import com.lncosie.ankorm.Column;
+import com.lncosie.ankorm.Table;
+import com.lncosie.ankorm.TableName;
 import com.lncosie.ankorm.Useage;
+import com.lncosie.ankorm.ViewName;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -148,4 +153,11 @@ public class FragmentNotes extends Fragment {
 
     }
 
+}
+@TableName(table="abc")
+class Fuck extends com.lncosie.ankorm.View{
+    @Column()
+    int n=0;
+    @Column()
+    Date    date;
 }
