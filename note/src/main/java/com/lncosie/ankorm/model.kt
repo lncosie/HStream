@@ -33,7 +33,6 @@ Retention(RetentionPolicy.RUNTIME)
 Target(ElementType.FIELD)
 public annotation class PrimaryKey()
 
-
 public open class View {
     public companion object {
         public final platformStatic inline fun <reified M: View>load(id: Long): M? {

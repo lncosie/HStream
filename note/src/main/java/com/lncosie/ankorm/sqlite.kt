@@ -31,7 +31,6 @@ public class SqliteDriver(context: Context, name: String, version: Int)
     public fun execSQL(sql: String) {
         getWritableDatabase().execSQL(sql)
     }
-
     public fun<M : View> save(m: M) {
         val database = getWritableDatabase()
         val tableInfo = TableInfo(m.javaClass)
