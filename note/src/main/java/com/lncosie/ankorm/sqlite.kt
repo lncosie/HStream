@@ -114,7 +114,6 @@ public class TableInfo<M : View>(val m: Class<?>) {
         val table = m.getAnnotation(kotlin.javaClass<com.lncosie.ankorm.TableName>())
         tableName = table?.table ?: m.getAnnotation(javaClass<ViewName>()).view
     }
-
     public fun tableQeueryInit(cursor: Cursor) {
         m.getDeclaredFields()
         assert(isTable() or isView(), "Query need mark Table or View annotations")

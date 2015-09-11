@@ -54,7 +54,6 @@ public open class AnkOrm {
             return sqlite
         }
     }
-
     fun close(): Unit {
         sqlite.close()
     }

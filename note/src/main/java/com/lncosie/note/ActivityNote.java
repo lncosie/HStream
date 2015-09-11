@@ -18,7 +18,6 @@ public class ActivityNote extends Activity {
         setContentView(R.layout.activity_note);
         gotoMonitor();
     }
-
     boolean editing=false;
     @Override
     public void onBackPressed() {
